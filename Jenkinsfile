@@ -23,6 +23,7 @@ pipeline {
                     }
             }
         }
+     }
 
 
         stage('Deploy Docker Image to DockerHub') {
