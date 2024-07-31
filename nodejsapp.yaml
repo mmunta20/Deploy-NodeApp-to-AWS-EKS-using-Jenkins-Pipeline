@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: nodejs-app
-        image: "mmunta20/nodejsapp-1.0"
+        image: "mmunta20/node-app-1.0"
         ports:
           - containerPort: 3000
 ---
