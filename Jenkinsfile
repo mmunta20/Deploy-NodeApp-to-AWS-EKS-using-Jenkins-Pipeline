@@ -1,6 +1,9 @@
 pipeline {
   agent any
-  
+  environment {
+        //be sure to replace "willbla" with your own Docker Hub username
+        DOCKER_IMAGE_NAME = "mmunta20/node-app-1.0"
+    }
    tools {nodejs "node"}
     
   stages {
@@ -13,9 +16,11 @@ pipeline {
   
      stage('Build Node JS Docker Image') {
             steps {
-                script {
-                  sh 'docker build -t mmunta20/node-app-1.0 .'
-                }
+                 script {
+                    app = docker.build(DOCKER_IMAGE_NAME)
+                    app.inside {
+                    sh 'echo Hello, World!'
+                    }
             }
         }
 
@@ -23,14 +28,13 @@ pipeline {
         stage('Deploy Docker Image to DockerHub') {
             steps {
                 script {
-                 withCredentials([string(credentialsId: 'dockerhublogin', variable: 'dockerhublogin')]) {
-                    sh 'docker login -u devopshint -p ${dockerhublogin}'
-            }
-            sh 'docker push mmunta20/node-app-1.0'
-        }
-            }   
-        }
-         
+                    docker.withRegistry('https://registry.hub.docker.com', 'dockerhublogin') {
+                        app.push("${env.BUILD_NUMBER}")
+                        app.push("latest")
+                    }
+                }
+             }
+         }          
      stage('Deploying Node App to Kubernetes') {
       steps {
                 withKubeCredentials(kubectlCredentials: [[caCertificate: '', clusterName: 'sample', contextName: '', credentialsId: 'SECRET_TOKEN_KUBE', namespace: '', serverUrl:'https://172.18.71.69:6443']]) {
