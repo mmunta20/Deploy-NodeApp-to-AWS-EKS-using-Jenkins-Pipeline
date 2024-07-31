@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: nodejs-app
-        image: "devopshint/nodejsapp-1.0:latest"
+        image: "mmunta20/nodejsapp-1.0:latest"
         ports:
           - containerPort: 3000
 ---
@@ -34,4 +34,4 @@ spec:
   ports:
   - name: http
     targetPort: 3000
-    port: 80
+    port: 30015
