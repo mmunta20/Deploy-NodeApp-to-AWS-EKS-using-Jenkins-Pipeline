@@ -4,8 +4,8 @@ pipeline {
         //be sure to replace "willbla" with your own Docker Hub username
         DOCKER_IMAGE_NAME = "mmunta20/node-app-1.0"
     }
-   tools {nodejs "node"}
-    
+      tools {nodejs "node"}
+      tools {nodejs "docker"}
   stages {
         
     stage('Node JS Build') {
