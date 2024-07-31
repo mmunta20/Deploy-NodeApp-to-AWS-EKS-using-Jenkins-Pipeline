@@ -7,7 +7,7 @@ pipeline {
     stage("Clone code from GitHub") {
             steps {
                 script {
-                    checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'GITHUB_CREDENTIALS', url: 'https://github.com/devopshint/Deploy-NodeApp-to-AWS-EKS-using-Jenkins-Pipeline']])
+                    checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'GitHub-key', url: 'https://github.com/mmunta20/Deploy-NodeApp-to-AWS-EKS-using-Jenkins-Pipeline']])
                 }
             }
         }
@@ -21,7 +21,7 @@ pipeline {
      stage('Build Node JS Docker Image') {
             steps {
                 script {
-                  sh 'docker build -t devopshint/node-app-1.0 .'
+                  sh 'docker build -t mmunta20/node-app-1.0 .'
                 }
             }
         }
@@ -30,23 +30,25 @@ pipeline {
         stage('Deploy Docker Image to DockerHub') {
             steps {
                 script {
-                 withCredentials([string(credentialsId: 'devopshintdocker', variable: 'devopshintdocker')]) {
-                    sh 'docker login -u devopshint -p ${devopshintdocker}'
+                 withCredentials([string(credentialsId: 'dockerhublogin', variable: 'dockerhublogin')]) {
+                    sh 'docker login -u devopshint -p ${dockerhublogin}'
             }
-            sh 'docker push devopshint/node-app-1.0'
+            sh 'docker push mmunta20/node-app-1.0'
         }
             }   
         }
          
      stage('Deploying Node App to Kubernetes') {
       steps {
-        script {
-          sh ('aws eks update-kubeconfig --name sample --region ap-south-1')
-          sh "kubectl get ns"
-          sh "kubectl apply -f nodejsapp.yaml"
-        }
+                withKubeCredentials(kubectlCredentials: [[caCertificate: '', clusterName: 'sample', contextName: '', credentialsId: 'SECRET_TOKEN_KUBE', namespace: '', serverUrl:'https://172.18.71.69:6443']]) {
+                sh 'curl -LO "https://storage.googleapis.com/kubernetes-release/release/v1.20.5/bin/linux/amd64/kubectl"'  
+                sh 'chmod u+x ./kubectl'  
+                sh './kubectl get nodes'
+                sh "kubectl apply -f nodejsapp.yaml"
+                sh './kubectl get pods'
+            }
+          }
       }
     }
-
-  }
 }
+
