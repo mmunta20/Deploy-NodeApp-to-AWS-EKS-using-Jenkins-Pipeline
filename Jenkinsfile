@@ -37,7 +37,7 @@ pipeline {
          }          
      stage('Deploying Node App to Kubernetes') {
       steps {
-                withKubeCredentials(kubectlCredentials: [[caCertificate: '', clusterName: 'sample', contextName: '', credentialsId: 'SECRET_TOKEN_KUBE', namespace: '', serverUrl:'https://172.18.71.69:6443']]) {
+                withKubeCredentials(kubectlCredentials: [[caCertificate: '', clusterName: 'sample', contextName: '', credentialsId: 'kubelogin', namespace: '', serverUrl:'https://172.18.71.69:6443']]) {
                 sh 'curl -LO "https://storage.googleapis.com/kubernetes-release/release/v1.20.5/bin/linux/amd64/kubectl"'  
                 sh 'chmod u+x ./kubectl'  
                 sh './kubectl get nodes'
