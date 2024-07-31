@@ -5,7 +5,7 @@ pipeline {
         DOCKER_IMAGE_NAME = "mmunta20/node-app-1.0"
     }
       tools {nodejs "node"}
-      tools {nodejs "docker"}
+      tools {docker "docker"}
   stages {
         
     stage('Node JS Build') {
